@@ -71,5 +71,34 @@ def create_tables():
     )
     """)
 
+        # 6) RFQ Decision - final selection made by purchase/approver
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS rfq_decision (
+        decision_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rfq_id INTEGER NOT NULL,
+        selected_vendor_id INTEGER NOT NULL,
+        selected_by TEXT NOT NULL,
+        override_reason TEXT,
+        created_on TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (rfq_id) REFERENCES rfq(rfq_id),
+        FOREIGN KEY (selected_vendor_id) REFERENCES vendors(vendor_id),
+        UNIQUE (rfq_id)
+    )
+    """)
+        # 7) Recommendation snapshot (freeze system view at time of decision)
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS rfq_recommendation_snapshot (
+        snapshot_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rfq_id INTEGER NOT NULL UNIQUE,
+        recommended_vendor_id INTEGER NOT NULL,
+        cheapest_vendor_id INTEGER NOT NULL,
+        weights TEXT,  -- store something like "price=0.65,lead=0.35,high=-40,med=-15"
+        created_on TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (rfq_id) REFERENCES rfq(rfq_id),
+        FOREIGN KEY (recommended_vendor_id) REFERENCES vendors(vendor_id),
+        FOREIGN KEY (cheapest_vendor_id) REFERENCES vendors(vendor_id)
+    )
+    """)
+
     conn.commit()
     conn.close()
