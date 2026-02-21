@@ -91,6 +91,15 @@ quotes_df = pd.read_sql_query(
 st.subheader("Quotes")
 st.dataframe(quotes_df, use_container_width=True)
 
+cheapest_vendor_id, recommended_vendor_id, weights = compute_cheapest_and_recommended(quotes_df)
+
+cheapest_name = quotes_df.loc[quotes_df["vendor_id"] == cheapest_vendor_id, "vendor_name"].iloc[0]
+recommended_name = quotes_df.loc[quotes_df["vendor_id"] == recommended_vendor_id, "vendor_name"].iloc[0]
+
+c1, c2 = st.columns(2)
+c1.metric("System Cheapest", cheapest_name)
+c2.metric("System Recommended", recommended_name)
+
 # Decision form
 st.subheader("Final Selection")
 vendor_map = dict(zip(quotes_df["vendor_name"], quotes_df["vendor_id"]))
