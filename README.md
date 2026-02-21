@@ -13,3 +13,12 @@ python -m venv .venv
 # macOS/Linux:
 source .venv/bin/activate
 
+### Important Note About Database
+
+- The SQLite database file (`data/procurement.db`) is **not tracked in Git**.
+- Each machine (local laptop, Codespaces, etc.) maintains its own local database file.
+- If you clone the repository on a new machine, you must initialize the database using:
+
+```bash
+python -m app.test_db
+python -m app.seed
